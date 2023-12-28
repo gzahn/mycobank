@@ -16,6 +16,17 @@ ___
 
 ___
 
+## Citation:
+
+Geoffrey Zahn. (2023). Mycobank R Package (v0.1) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.10439638
+
+[![DOI](https://zenodo.org/badge/736449862.svg)](https://zenodo.org/doi/10.5281/zenodo.10439638)
+
+
+
+___
+
+
 ## Example usage:
 
 **Download the Mycobank database.** This will download the database the first time you use it. Subsequent times, it will only return the database as a data frame unless you specify `overwrite = TRUE`.
