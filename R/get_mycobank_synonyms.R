@@ -28,6 +28,8 @@
 #' @export
 
 get_mycobank_synonyms <- function(taxa,mycobank_db){
+  taxa <- taxa %>% str_to_sentence()
+
   synonyms <- list()
   for(taxon in taxa){
     records <- mycobank_db %>%
