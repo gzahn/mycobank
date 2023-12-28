@@ -4,6 +4,14 @@ Tools for programmatically accessing and querying the [Mycobank fungal taxonomic
 
 ___
 
+## Installation:
+
+`if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
+devtools::install_github("gzahn/mycobank")`
+
+___
+
 ## Example usage:
 
 **Download the Mycobank database.** This will download the database the first time you use it. Subsequent times, it will only return the database as a data frame unless you specify `overwrite = TRUE`.
