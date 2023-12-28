@@ -39,6 +39,5 @@ Get a character vector of taxonomic names. These can be "genus species" or just 
 
 ...more features coming soon, with tools to:
 
-  - return a list of all synonyms for each taxon
   - return info on anamorph/teliomorph synonyms
 
