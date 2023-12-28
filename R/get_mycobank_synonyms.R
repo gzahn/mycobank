@@ -27,7 +27,7 @@
 #'
 #' @export
 
-get_mycobank_synonyms <- function(taxa){
+get_mycobank_synonyms <- function(taxa,mycobank_db){
   synonyms <- list()
   for(taxon in taxa){
     records <- mycobank_db %>%

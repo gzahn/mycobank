@@ -4,7 +4,7 @@
 \alias{get_mycobank_synonyms}
 \title{Get the 'current' Mycobank synonyms for a vector of taxa names}
 \usage{
-get_mycobank_synonyms(taxa)
+get_mycobank_synonyms(taxa, mycobank_db)
 }
 \arguments{
 \item{taxa}{Character. Vector of taxa names to look up.}
