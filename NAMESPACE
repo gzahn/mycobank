@@ -2,6 +2,7 @@
 
 export(get_current_mycobank_name)
 export(get_mycobank_db)
+export(get_mycobank_synonyms)
 import(dplyr)
 import(magrittr)
 import(purrr)

@@ -50,17 +50,6 @@ get_current_mycobank_name <- function(taxa,mycobank_db){
   # remove duplicate taxa
   taxa <- unique(taxa)
 
-  # str_detect(synonyms,taxa[1]) %>% which()
-
-
-  # format synonym column for matching # THIS TAKES FOREVER #
-  # lowercase_synonyms <-
-  # map(strsplit(synonyms,"taxonomic synonyms: "),2) %>%
-  #   map(str_squish)
-  #
-  # lowercase_synonyms
-
-
   # FIND MATCHES IN SYNONYMS (How to deal with missing values???)
 
   # get matches in synonyms column
@@ -70,20 +59,7 @@ get_current_mycobank_name <- function(taxa,mycobank_db){
     str_detect(lowercase_synonyms,pattern = taxon) %>% which()
   }
 
-  # # get current names
-  # synonym_matches_list <-
-  #   synonym_matches %>%
-  #   str_split("taxonomic synonyms: ") %>%
-  #   map(1) %>%
-  #   str_squish() %>%
-  #   str_split(" ")
-  #
-  # current_name <-
-  # map_chr(synonym_matches_list,function(x){paste(x[3],x[4],sep=" ")}) %>% unique()
-
-
   # if synonym_matches has no hit, replace with NA
-
   testlength <-
   synonym_matches %>%
     map_lgl(function(x){identical(x, integer(0))}) %>%
@@ -95,8 +71,6 @@ get_current_mycobank_name <- function(taxa,mycobank_db){
                        which()]] <- NA
   }
 
-
-  # synonym_matches[names(synonym_matches)[1]]
 
   lowercase_db_taxa_names <- str_to_lower(mycobank_db$Taxon_name)
 
@@ -168,24 +142,8 @@ get_current_mycobank_name <- function(taxa,mycobank_db){
 
 
 
-  # # use current names to pull additional current info from database
-  # current_name_info <- list()
-  # for(taxon in current_name){
-  #   hits <- db[str_to_lower(mycobank_db$Taxon_name) == taxon,]
-  #   if(nrow(hits) > 1){ # take most recent publication record
-  #     hits_arranged <-
-  #     hits %>%
-  #       dplyr::mutate(year = as.numeric(Year_of_effective_publication)) %>%
-  #       dplyr::arrange(dplyr::desc(year))
-  #     hits <- hits_arranged[1,]
-  #   }
-  #   current_name_info[[taxon]] <- hits
-  # }
-
-
-    # Turn warnings back to default
+  # Turn warnings back to default
   options(warn = defaultW)
-
 
   return(current_name_df)
 
