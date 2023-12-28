@@ -27,7 +27,12 @@ Get a character vector of taxonomic names. These can be "genus species" or just 
 
 `taxa <- c("Abaphospora borealis","Conisphaeria borealis var. minor","Sphaeria borealis","Nonsense name","Abaphospora")`
 
-`get_current_mycobank_name(taxa,db)`
+`currrent_names <- get_current_mycobank_name(taxa,db)`
+
+**Get a list of basionyms, obligate & taxonomic synonyms.**
+
+`synonyms <- get_mycobank_synonyms(taxa,db)`
+
 
 ...more features coming soon, with tools to:
 
