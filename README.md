@@ -62,20 +62,20 @@ info <- c("query","current_name","basio_name","obligate_synonym")
 
 synonyms[info] %>% as_tibble()
 ```
-
+<img src="https://github.com/gzahn/mycobank/blob/main/media/screenshot1.png" alt="tibble1"/>
 
 
 You can look at individual results by descending into the list
 
 `synonyms$taxonomic_synonyms$Abaphospora`
 
-...or, you could stick them all into a big data frame, padded with extra NA values so they all have the same lengths
+...or, you could access a 'tidy' version of all the taxonomic info
+```
+synonyms$tidy_results
+```
+<img src="https://github.com/gzahn/mycobank/blob/main/media/screenshot2.png" alt="tibble2_tidy"/>
 
-```
-synonyms$taxonomic_synonyms %>% 
-  sapply("length<-", max(lengths(.))) %>% 
-  as_tibble()
-```
+
 
 ...more features coming soon, with tools to:
 
