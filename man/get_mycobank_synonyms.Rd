@@ -12,7 +12,7 @@ get_mycobank_synonyms(taxa, mycobank_db)
 \item{mycobank_db}{Data frame. Object name for Mycobank database. Typically created by get_mycobank_db()}
 }
 \value{
-List. Contains 5 elements:  "query","current_name","basio_name","obligate_synonym","taxonomic_synonyms"
+List. Contains 6 elements:  "query","current_name","basio_name","obligate_synonym","taxonomic_synonyms", "tidy_results"
 }
 \description{
 Parses through the Mycobank synonyms and taxon names to pull various synonyms for a vector of taxon names
@@ -20,7 +20,7 @@ Names should be in a character vector and in the format "genus species" or just 
 If a given taxonomic name query consists of only one 'word' then taxonomic level of 'genus' is assumed
 }
 \details{
-This will search through the database using pattern matching to pull the various basionyms, and synonyms for a given taxon name, if present. Returns NA for that taxon otherwise.
+This will search through the database using pattern matching to pull the various basionyms, and synonyms for a given taxon name, if present. Returns NA for that taxon otherwise. The 'tidy_results' element of the returned list contains a 'long-form' tibble with all supported synonym types.
 }
 \examples{
 db <- get_mycobank_db(overwrite = FALSE)

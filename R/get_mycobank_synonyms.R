@@ -13,10 +13,10 @@
 #' @param taxa Character. Vector of taxa names to look up.
 #' @param mycobank_db Data frame. Object name for Mycobank database. Typically created by get_mycobank_db()
 #'
-#' @return List. Contains 5 elements:  "query","current_name","basio_name","obligate_synonym","taxonomic_synonyms"
+#' @return List. Contains 6 elements:  "query","current_name","basio_name","obligate_synonym","taxonomic_synonyms", "tidy_results"
 #'
 #' @details
-#' This will search through the database using pattern matching to pull the various basionyms, and synonyms for a given taxon name, if present. Returns NA for that taxon otherwise.
+#' This will search through the database using pattern matching to pull the various basionyms, and synonyms for a given taxon name, if present. Returns NA for that taxon otherwise. The 'tidy_results' element of the returned list contains a 'long-form' tibble with all supported synonym types.
 #'
 #' @examples
 #' db <- get_mycobank_db(overwrite = FALSE)
@@ -28,6 +28,7 @@
 #' @export
 
 get_mycobank_synonyms <- function(taxa,mycobank_db){
+
   taxa <- taxa %>% str_to_sentence()
 
   synonyms <- list()
@@ -42,7 +43,7 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
   # FINDING SYNONYMS ####
   # synonyms might be listed as "Obligate synonyms: "
   # need to deal with obligate synonyms
-  synonyms %>% map("Synonymy")
+
   query_lengths <- names(synonyms) %>% str_split(" ") %>% map_dbl(length)
   genus_queries <- which(query_lengths == 1)
 
@@ -57,9 +58,6 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
     map(1) %>%
     map(2) %>%
     map(str_squish)
-
-  taxa
-  synonym_text
 
   # get current names
   current_names <- c()
@@ -139,8 +137,30 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
   # return this as a list in final form
   data.frame(query=taxa,current_names,basio_names,obligate_synonym=obligate_names)
   names(taxa) <- taxa
+
+  # add tidy results element to list
+
   final_list <- list(query=taxa,current_name=current_names,basio_name=basio_names,obligate_synonym=obligate_names,taxonomic_synonyms=tax_names)
 
+
+
+  info <- c("query","current_name","basio_name","obligate_synonym")
+  all_elements <- final_list[info] %>% as_tibble()
+  tidy_results <-
+    tax_names %>%
+    sapply("length<-", max(lengths(.))) %>%
+    as_tibble() %>% pivot_longer(everything(),names_to = "query",values_to = "taxonomic_synonyms") %>%
+    full_join(all_elements) %>%
+    unique.data.frame() %>%
+    group_by(query) %>%
+    reframe(current_name=unique(current_name),
+            basio_name=unique(basio_name),
+            obligate_synonym=unique(obligate_synonym),
+            taxonomic_synonyms=unique(taxonomic_synonyms))
+
+  final_list[["tidy_results"]] <- tidy_results
+
   return(final_list)
+
 
 }
