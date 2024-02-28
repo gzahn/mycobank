@@ -2,19 +2,19 @@ library(hexSticker)
 
 
 # make hex sticker ####
-imgurl <- "./media/mycobank_sticker_image.png"
+imgurl <- "./media/mycobank_sticker_image2.png"
 
-sticker(spotlight = TRUE,
+sticker(spotlight = FALSE,
         l_alpha = .5,
         l_x = 1,
         l_y = 1,
         l_width = 1,
         l_height = 1,
-        subplot=imgurl, package = "mycobank",filename = "./media/mycobank_hex_sticker.png",
-        s_width = .4,h_fill = "#206129",
+        subplot=imgurl, package = "mycobank",filename = "./media/mycobank_hex_sticker2.png",
+        s_width = .6,h_fill = "#206129",
         s_height = .4,
-        s_x = 1,
-        s_y = 1,
+        s_x = 1.04,
+        s_y = .9,
         p_y = 1.5,
         p_x = 1,
         p_size = 18,

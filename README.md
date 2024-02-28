@@ -1,6 +1,6 @@
 # mycobank
 
-<img src="https://github.com/gzahn/mycobank/blob/main/media/mycobank_hex_sticker.png" alt="drawing" width="200"/>
+<img src="https://github.com/gzahn/mycobank/blob/main/media/mycobank_hex_sticker2.png" alt="drawing" width="200"/>
 
 
 Tools for programmatically accessing and querying the [Mycobank fungal taxonomic database](https://www.mycobank.org).
