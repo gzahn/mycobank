@@ -20,11 +20,11 @@ Names should be in a character vector and in the format "genus species" or just 
 If a given taxonomic name query consists of only one 'word' then taxonomic level of 'genus' is assumed
 }
 \details{
-This will search through the database using pattern matching to pull the various basionyms, and synonyms for a given taxon name, if present. Returns NA for that taxon otherwise. The 'tidy_results' element of the returned list contains a 'long-form' tibble with all supported synonym types.
+This will search through the database using pattern matching to pull the various basionyms, and synonyms for a given taxon name, if present. Returns NA for that taxon otherwise. The 'tidy_results' element of the returned list contains a 'long-form' tibble with all supported synonym types. Taxa with "sp." in their name will return genus-level synonyms only.
 }
 \examples{
 db <- get_mycobank_db(overwrite = FALSE)
-taxa <- c("Abaphospora borealis","Conisphaeria borealis var. minor","Sphaeria borealis","Nonsense name","Abaphospora")
+taxa <- c("Abaphospora borealis","Conisphaeria borealis var. minor","Sphaeria borealis","Nonsense name","Abaphospora sp.")
 synonyms <- get_mycobank_synonyms(taxa,db)
 # To see a tidy format for the first taxon query:
 synonyms \%>\% map(1) \%>\% as.data.frame()

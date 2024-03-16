@@ -16,11 +16,11 @@
 #' @return List. Contains 6 elements:  "query","current_name","basio_name","obligate_synonym","taxonomic_synonyms", "tidy_results"
 #'
 #' @details
-#' This will search through the database using pattern matching to pull the various basionyms, and synonyms for a given taxon name, if present. Returns NA for that taxon otherwise. The 'tidy_results' element of the returned list contains a 'long-form' tibble with all supported synonym types.
+#' This will search through the database using pattern matching to pull the various basionyms, and synonyms for a given taxon name, if present. Returns NA for that taxon otherwise. The 'tidy_results' element of the returned list contains a 'long-form' tibble with all supported synonym types. Taxa with "sp." in their name will return genus-level synonyms only.
 #'
 #' @examples
 #' db <- get_mycobank_db(overwrite = FALSE)
-#' taxa <- c("Abaphospora borealis","Conisphaeria borealis var. minor","Sphaeria borealis","Nonsense name","Abaphospora")
+#' taxa <- c("Abaphospora borealis","Conisphaeria borealis var. minor","Sphaeria borealis","Nonsense name","Abaphospora sp.")
 #' synonyms <- get_mycobank_synonyms(taxa,db)
 #' # To see a tidy format for the first taxon query:
 #' synonyms %>% map(1) %>% as.data.frame()
@@ -30,9 +30,19 @@
 get_mycobank_synonyms <- function(taxa,mycobank_db){
 
   taxa <- taxa %>% str_to_sentence()
+  if(any(duplicated(taxa))){
+    taxa <- unique(taxa)
+    warning("Duplicated taxa query names removed.")
+  }
+
+  taxa2 <- taxa %>% str_remove(" sp.") %>% unique()
+
+  if(length(taxa) != length(taxa2)){
+    warning("Duplicate taxa names removed. Only returning unique results. Did you provide, for example: 'Abaphospora' & 'Abaphospora sp.'? This would only return results for the genus 'Abaphospora'")
+  }
 
   synonyms <- list()
-  for(taxon in taxa){
+  for(taxon in taxa2){
     records <- mycobank_db %>%
       dplyr::filter(Taxon_name == taxon) %>%
       dplyr::filter(Name_status == "Legitimate")
@@ -61,12 +71,12 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
 
   # get current names
   current_names <- c()
-  for(i in seq_along(taxa)){
+  for(i in seq_along(taxa2)){
     # get number of words in name
     n_words <- query_lengths[i]
     current_name <- word(synonym_text[[i]],end=n_words)
     current_name <- ifelse(identical(current_name,character(0)),NA,current_name)
-    current_names[taxa[i]] <- current_name
+    current_names[taxa2[i]] <- current_name
   }
 
   basionym_text <-
@@ -78,14 +88,14 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
 
   # get basionyms
   basio_names <- c()
-  for(i in seq_along(taxa)){
+  for(i in seq_along(taxa2)){
     n_words <- query_lengths[i]
     text <- ifelse(basionym_text[[i]] %>%
                      grepl(pattern = "Basionym: "),basionym_text[[i]],NA)
     if(identical(text,logical(0))){text <- NA}
     text <- word(basionym_text[[i]],end=n_words)
     if(identical(text,character(0))){text <- NA}
-    basio_names[taxa[i]] <- text
+    basio_names[taxa2[i]] <- text
   }
 
   obligate_text <-
@@ -97,14 +107,14 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
 
   # get obligate synonyms
   obligate_names <- c()
-  for(i in seq_along(taxa)){
+  for(i in seq_along(taxa2)){
     n_words <- query_lengths[i]
     text <- ifelse(obligate_text[[i]] %>%
                      grepl(pattern = "Obligate synonyms: "),obligate_text[[i]],NA)
     if(identical(text,logical(0))){text <- NA}
     text <- word(obligate_text[[i]],end=n_words)
     if(identical(text,character(0))){text <- NA}
-    obligate_names[taxa[i]] <- text
+    obligate_names[taxa2[i]] <- text
   }
 
 
@@ -118,7 +128,7 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
 
   # get obligate synonyms
   tax_names <- list()
-  for(i in seq_along(taxa)){
+  for(i in seq_along(taxa2)){
     n_words <- query_lengths[i]
     text <- ifelse(tax_text[[i]] %>%
                      grepl(pattern = "_TAXONOMIC_SYNONYMS_"),tax_text[[i]],NA)
@@ -129,18 +139,18 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
       str_remove("_TAXONOMIC_SYNONYMS_") %>%
       str_split(" - ")
 
-    tax_names[[taxa[i]]] <- synonym_list[[1]]
+    tax_names[[taxa2[i]]] <- synonym_list[[1]]
   }
 
 
 
   # return this as a list in final form
-  data.frame(query=taxa,current_names,basio_names,obligate_synonym=obligate_names)
+  # data.frame(query=taxa2,current_names,basio_names,obligate_synonym=obligate_names)
   names(taxa) <- taxa
 
   # add tidy results element to list
 
-  final_list <- list(query=taxa,current_name=current_names,basio_name=basio_names,obligate_synonym=obligate_names,taxonomic_synonyms=tax_names)
+  final_list <- list(query=taxa2,current_name=current_names,basio_name=basio_names,obligate_synonym=obligate_names,taxonomic_synonyms=tax_names)
 
 
 
