@@ -76,8 +76,22 @@ synonyms$tidy_results
 <img src="https://github.com/gzahn/mycobank/blob/main/media/screenshot2.png" alt="tibble2_tidy"/>
 
 
+**Get a list of taxonomic classifications.**
 
-...more features coming soon, with tools to:
+(returns a character vector of taxonomic classifications for each taxon)
 
-  - return info on anamorph/teliomorph synonyms
+```
+get_mycobank_taxonomy(taxa,db)
+```
+
+<img src="https://github.com/gzahn/mycobank/blob/main/media/screenshot3.png" alt="tibble3"/>
+
+
+**I think that's really all there is to do here.**
+
+If you want any other info, it's all in that database tibble waiting for your creativity!
+
+<br>
+
+<br>
 
