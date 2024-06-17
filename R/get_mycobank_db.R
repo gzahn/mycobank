@@ -81,6 +81,7 @@ get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.m
 
   xls_fp <- sub(pattern = ".zip",replacement = ".xlsx",x = db_fp)
   if(!file.exists(xls_fp)){
+    system2("cd",args = c(db_dir))
     system2("unzip",args = c("-o",db_fp))
   }
 
