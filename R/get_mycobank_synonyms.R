@@ -41,6 +41,9 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
     warning("Duplicate taxa names removed. Only returning unique results. Did you provide, for example: 'Abaphospora' & 'Abaphospora sp.'? This would only return results for the genus 'Abaphospora'")
   }
 
+  # remove any spaces from mycobank column names
+  names(mycobank_db) <- mycobank_db %>% names %>% str_replace_all(" ","_")
+
   synonyms <- list()
   for(taxon in taxa2){
     records <- mycobank_db %>%
