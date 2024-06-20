@@ -27,27 +27,38 @@
 
 get_mycobank_taxonomy <- function(taxa,mycobank_db){
 
-taxa <- taxa %>% str_to_sentence()
-if(any(duplicated(taxa))){
-  taxa <- unique(taxa)
-  warning("Duplicated taxa query names removed.")
+  '%ni%' <- Negate('%in%')
+
+  taxa <- taxa %>% str_to_sentence()
+  if(any(duplicated(taxa))){
+    taxa <- unique(taxa)
+    warning("Duplicated taxa query names removed.")
+  }
+
+  taxa2 <- taxa %>% str_remove(" sp.") %>% unique()
+
+  if(length(taxa) != length(taxa2)){
+    warning("Duplicate taxa names removed. Only returning unique results. Did you provide, for example: 'Abaphospora' & 'Abaphospora sp.'? This would only return results for the genus 'Abaphospora'")
+  }
+
+  # remove any spaces from mycobank column names
+  names(mycobank_db) <- mycobank_db %>% names %>% str_replace_all(" ","_")
+
+  classification_list <- c()
+
+  for(name in taxa2){
+
+    if(name %ni% mycobank_db$Taxon_name){x <- NA}
+
+    if(name %in% mycobank_db$Taxon_name){
+      x <- mycobank_db %>%
+        dplyr::filter(Taxon_name %in% name & Name_status == "Legitimate") %>%
+        pluck("Classification")}
+
+    classification_list[name] <- x
+  }
+  return(classification_list)
 }
-
-taxa2 <- taxa %>% str_remove(" sp.") %>% unique()
-
-if(length(taxa) != length(taxa2)){
-  warning("Duplicate taxa names removed. Only returning unique results. Did you provide, for example: 'Abaphospora' & 'Abaphospora sp.'? This would only return results for the genus 'Abaphospora'")
-}
-
-# remove any spaces from mycobank column names
-names(mycobank_db) <- mycobank_db %>% names %>% str_replace_all(" ","_")
-
-records <- mycobank_db %>%
-  dplyr::filter(Taxon_name %in% taxa2) %>%
-  dplyr::filter(Name_status == "Legitimate")
-return(records$Classification)
-}
-
 
 
 
