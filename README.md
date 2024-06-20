@@ -75,6 +75,19 @@ synonyms$tidy_results
 ```
 <img src="https://github.com/gzahn/mycobank/blob/main/media/screenshot2.png" alt="tibble2_tidy"/>
 
+___
+
+**Want to see which, if any, of your query names differ from the current names in MycoBank?**
+
+```
+data.frame(query=taxa,current=synonyms$current_name) %>% 
+  mutate(query = str_remove(query," sp.")) %>% 
+  mutate(different = case_when(query == current ~ FALSE,
+                               query != current ~ TRUE))
+```
+
+___
+
 
 **Get a list of taxonomic classifications.**
 
