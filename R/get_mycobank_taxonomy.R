@@ -39,6 +39,9 @@ if(length(taxa) != length(taxa2)){
   warning("Duplicate taxa names removed. Only returning unique results. Did you provide, for example: 'Abaphospora' & 'Abaphospora sp.'? This would only return results for the genus 'Abaphospora'")
 }
 
+# remove any spaces from mycobank column names
+names(mycobank_db) <- mycobank_db %>% names %>% str_replace_all(" ","_")
+
 records <- mycobank_db %>%
   dplyr::filter(Taxon_name %in% taxa2) %>%
   dplyr::filter(Name_status == "Legitimate")
