@@ -80,6 +80,8 @@ ___
 **Want to see which, if any, of your query names differ from the current names in MycoBank?**
 
 ```
+# this code will give a simple data frame with an additional TRUE/FALSE column indicating whether there is a difference
+# useful to quickly scan your results
 data.frame(query=taxa,current=synonyms$current_name) %>% 
   mutate(query = str_remove(query," sp.")) %>% 
   mutate(different = case_when(query == current ~ FALSE,
