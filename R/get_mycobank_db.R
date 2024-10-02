@@ -42,38 +42,27 @@ get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.m
 
   # If Windows system, it will add ".ZIP" to downloaded file name
   if(Sys.info()[['sysname']] == "Windows"){
-    cat("Windows system detected")
-
-    # get main filepath and put mycobank database in it
-    if(dl_path == "default"){
-      main_fp <- .libPaths()[1]
-      db_dir <- file.path(main_fp,"mycobank_db")
-      # account for Windows adding ".ZIP"
-      db_fp <- list.files(db_dir,pattern = "MBList.zip",full.names = TRUE)[1]
-    }
-
-    if(dl_path != "default"){
-      main_fp <- dl_path
-      db_dir <- file.path(main_fp,"mycobank_db")
-      db_fp <- list.files(db_dir,pattern = "MBList.zip",full.names = TRUE)[1]
-    }
-
-  } else {
-    # get main filepath and put mycobank database in it
-    if(dl_path == "default"){
-      main_fp <- .libPaths()[1]
-      db_dir <- file.path(main_fp,"mycobank_db")
-      # account for Windows adding ".ZIP"
-      db_fp <- file.path(db_dir,"MBList.zip")
-    }
-
-    if(dl_path != "default"){
-      main_fp <- dl_path
-      db_dir <- file.path(main_fp,"mycobank_db")
-      db_fp <- file.path(db_dir,"MBList.zip")
-    }
-
+    cat("Windows system detected. Some versions of Windows add extra file path extensions. ")
+    cat("If you get an error below like 'cannot find or open ... MBList.zip.zip' ")
+    cat("Then you may have to go to the download location and manually unzip the file. ")
+    cat("Then you will be able to run this command and it should work. ")
+    cat("If that doesn't work, please use a Unix (Mac or Linux) computer because I cannot deal with Windows' bullshit.")
   }
+
+    # get main filepath and put mycobank database in it
+    if(dl_path == "default"){
+      main_fp <- .libPaths()[1]
+      db_dir <- file.path(main_fp,"mycobank_db")
+      # account for Windows adding ".ZIP"
+      db_fp <- file.path(db_dir,"MBList.zip")
+    }
+
+    if(dl_path != "default"){
+      main_fp <- dl_path
+      db_dir <- file.path(main_fp,"mycobank_db")
+      db_fp <- file.path(db_dir,"MBList.zip")
+    }
+
 
 
   # make download dir if doesn't exist
@@ -85,7 +74,7 @@ get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.m
   if(!file.exists(db_fp)){
     cat("Downloading current Mycobank database...")
     system2("wget",args = c("https://www.mycobank.org/Images/MBList.zip", "-O", db_fp))
-    cat("Download location is:")
+    cat("Download location is: ")
     cat(db_dir)
   }
 
