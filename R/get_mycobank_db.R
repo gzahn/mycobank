@@ -40,18 +40,41 @@ get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.m
 
   # HANDLE DOWNLOAD ############################################################
 
-  # get main filepath and put mycobank database in it
-  if(dl_path == "default"){
-    main_fp <- .libPaths()[1]
-    db_dir <- file.path(main_fp,"mycobank_db")
-    db_fp <- list.files(db_dir,pattern = "MBList.zip",full.names = TRUE)
+  # If Windows system, it will add ".ZIP" to downloaded file name
+  if(Sys.info()[['sysname']] == "Windows"){
+    cat("Windows system detected")
+
+    # get main filepath and put mycobank database in it
+    if(dl_path == "default"){
+      main_fp <- .libPaths()[1]
+      db_dir <- file.path(main_fp,"mycobank_db")
+      # account for Windows adding ".ZIP"
+      db_fp <- list.files(db_dir,pattern = "MBList.zip",full.names = TRUE)[1]
+    }
+
+    if(dl_path != "default"){
+      main_fp <- dl_path
+      db_dir <- file.path(main_fp,"mycobank_db")
+      db_fp <- list.files(db_dir,pattern = "MBList.zip",full.names = TRUE)[1]
+    }
+
+  } else {
+    # get main filepath and put mycobank database in it
+    if(dl_path == "default"){
+      main_fp <- .libPaths()[1]
+      db_dir <- file.path(main_fp,"mycobank_db")
+      # account for Windows adding ".ZIP"
+      db_fp <- file.path(db_dir,"MBList.zip")
+    }
+
+    if(dl_path != "default"){
+      main_fp <- dl_path
+      db_dir <- file.path(main_fp,"mycobank_db")
+      db_fp <- file.path(db_dir,"MBList.zip")
+    }
+
   }
 
-  if(dl_path != "default"){
-    main_fp <- dl_path
-    db_dir <- file.path(main_fp,"mycobank_db")
-    db_fp <- list.files(db_dir,pattern = "MBList.zip",full.names = TRUE)
-  }
 
   # make download dir if doesn't exist
   if(!dir.exists(db_dir)){
