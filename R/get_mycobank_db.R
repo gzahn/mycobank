@@ -44,13 +44,13 @@ get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.m
   if(dl_path == "default"){
     main_fp <- .libPaths()[1]
     db_dir <- file.path(main_fp,"mycobank_db")
-    db_fp <- file.path(db_dir,"MBList.zip")
+    db_fp <- list.files(db_dir,pattern = "MBList.zip",full.names = TRUE)
   }
 
   if(dl_path != "default"){
     main_fp <- dl_path
     db_dir <- file.path(main_fp,"mycobank_db")
-    db_fp <- file.path(db_dir,"MBList.zip")
+    db_fp <- list.files(db_dir,pattern = "MBList.zip",full.names = TRUE)
   }
 
   # make download dir if doesn't exist
