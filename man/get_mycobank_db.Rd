@@ -23,7 +23,7 @@ Data frame. Side effects: Downloads and extracts the Mycobank database .zip file
 \description{
 Downloads and parses the Mycobank database
 If the database has been previously downloaded and you do not need to update it, this will just return the existing database as a data frame.
-Uses system commands (wget, unzip) so make sure you have these in your system PATH
+Uses R's internal downloading protocols, but these rely on having them installed.
 }
 \examples{
 x <- get_mycobank_db(overwrite=TRUE)

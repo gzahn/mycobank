@@ -2,7 +2,7 @@
 #'
 #' Downloads and parses the Mycobank database
 #' If the database has been previously downloaded and you do not need to update it, this will just return the existing database as a data frame.
-#' Uses system commands (wget, unzip) so make sure you have these in your system PATH
+#' Uses R's internal downloading protocols, but these rely on having them installed.
 #'
 #' @import readxl
 #'
@@ -16,7 +16,6 @@
 #' x <- get_mycobank_db(overwrite=TRUE)
 #'
 #' @export
-
 
 get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.mycobank.org/Images/MBList.zip"){
 
@@ -47,6 +46,7 @@ get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.m
     cat("Then you may have to go to the download location and manually unzip the file. ")
     cat("Then you will be able to run this command and it should work. ")
     cat("If that doesn't work, please use a Unix (Mac or Linux) computer because I cannot deal with Windows' bullshit.")
+    cat("Please see options() to change download method through the option 'download.file.method' ")
   }
 
     # get main filepath and put mycobank database in it
@@ -73,15 +73,17 @@ get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.m
   # download database if it doesn't exist already
   if(!file.exists(db_fp)){
     cat("Downloading current Mycobank database...")
-    system2("wget",args = c("https://www.mycobank.org/Images/MBList.zip", "-O", db_fp))
+    download.file(url = url,destfile = db_fp)
     cat("Download location is: ")
     cat(db_dir)
   }
 
+
+
   # if overwrite == TRUE and file exists already, re-download
   if(file.exists(db_fp) & overwrite == TRUE){
     cat("Re-downloading database")
-    system2("wget",args = c("https://www.mycobank.org/Images/MBList.zip", "-O", db_fp))
+    download.file(url = url,destfile = db_fp)
   }
 
   # if overwrite set to FALSE and file already exists, do not download
@@ -91,11 +93,10 @@ get_mycobank_db <- function(dl_path="default",overwrite=FALSE,url="https://www.m
 
   # UNZIP DATABASE #############################################################
 
-  xls_fp <- sub(pattern = ".zip",replacement = ".xlsx",x = db_fp)
+  xls_fp <- file.path(db_dir,"MBList.xlsx")
   if(!file.exists(xls_fp)){
-    system2("cd",args = c(db_dir))
-    system2("unzip",args = c("-o",db_fp))
-  }
+    unzip(db_fp, exdir = db_dir, files = "MBList.xlsx")
+    }
 
 
   # RETURN DATABASE OBJECT #####################################################
