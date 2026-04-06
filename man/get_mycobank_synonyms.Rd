@@ -12,7 +12,7 @@ get_mycobank_synonyms(taxa, mycobank_db)
 \item{mycobank_db}{Data frame. Object name for Mycobank database. Typically created by get_mycobank_db()}
 }
 \value{
-List. Contains 6 elements:  "query","current_name","basio_name","obligate_synonym","taxonomic_synonyms", "tidy_results"
+List. Contains 6 elements:  "query","current_name","basio_name","obligate_synonym","taxonomic_synonyms", "mb_name", "publication_results", "tidy_results"
 }
 \description{
 Parses through the Mycobank synonyms and taxon names to pull various synonyms for a vector of taxon names

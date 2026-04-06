@@ -29,6 +29,64 @@
 
 get_mycobank_synonyms <- function(taxa,mycobank_db){
 
+  extract_mycobank_publications <- function(text) {
+    if(length(text) == 0 || is.na(text) || !nzchar(text)) {
+      return(tibble(
+        section = character(),
+        linked_name = character(),
+        publication = character(),
+        mb_number = character()
+      ))
+    }
+    
+    text <- stringr::str_squish(text)
+    
+    sections <- c("Current name", "Basionym", "Obligate synonyms", "Taxonomic synonyms")
+    
+    pattern <- paste0("(", paste(sections, collapse = "|"), "):")
+    pieces <- stringr::str_split(text, pattern, simplify = FALSE)[[1]]
+    headers <- stringr::str_extract_all(text, pattern)[[1]] %>%
+      stringr::str_remove(":$")
+    
+    if(length(headers) == 0) {
+      return(tibble(
+        section = NA_character_,
+        linked_name = NA_character_,
+        publication = text,
+        mb_number = NA_character_
+      ))
+    }
+    
+    content <- pieces[-1]
+    
+    out <- purrr::map2_dfr(headers, content, function(sec, x) {
+      x <- stringr::str_squish(x)
+      
+      entries <- stringr::str_split(x, "\\s+-\\s+")[[1]]
+      
+      purrr::map_dfr(entries, function(entry) {
+        entry <- stringr::str_squish(entry)
+        
+        mb_number <- stringr::str_extract(entry, "MB#\\d+")
+        entry_no_mb <- stringr::str_remove(entry, "\\s*\\[MB#\\d+\\]")
+        
+        # Split at first comma. Everything before is name, everything after is citation.
+        # Not perfect, but usually works well for MycoBank-style strings.
+        linked_name <- stringr::str_extract(entry_no_mb, "^[^,]+")
+        publication <- stringr::str_remove(entry_no_mb, "^[^,]+,\\s*")
+        
+        tibble(
+          section = sec,
+          linked_name = dplyr::na_if(linked_name, ""),
+          publication = dplyr::na_if(publication, ""),
+          mb_number = dplyr::na_if(mb_number, "")
+        )
+      })
+    })
+    
+    out
+  }
+  
   taxa <- taxa %>% str_to_sentence()
   if(any(duplicated(taxa))){
     taxa <- unique(taxa)
@@ -151,24 +209,62 @@ get_mycobank_synonyms <- function(taxa,mycobank_db){
   # data.frame(query=taxa2,current_names,basio_names,obligate_synonym=obligate_names)
   names(taxa) <- taxa
 
+  # Get mycobank URLs
+  mb_links <- c()
+  for(i in seq_along(taxa2)){
+    rec <- synonyms[[taxa2[i]]]
+    
+    link <- rec$Hyperlink_to_MB %>% unique()
+    
+    if(length(link) == 0){
+      link <- NA_character_
+    } else {
+      link <- link[1]
+    }
+    
+    mb_links[taxa2[i]] <- link
+  }
+  
+  publication_results <- purrr::map_dfr(seq_along(taxa2), function(i) {
+    taxon <- taxa2[i]
+    rec <- synonyms[[taxon]]
+    
+    syn_text <- rec$Synonymy[1]
+    mb_link <- rec$Hyperlink_to_MB[1]
+    
+    extract_mycobank_publications(syn_text) %>%
+      mutate(
+        query = taxon,
+        query_mb_link = mb_link,
+        .before = 1
+      )
+  })
+  
   # add tidy results element to list
 
-  final_list <- list(query=taxa2,current_name=current_names,basio_name=basio_names,obligate_synonym=obligate_names,taxonomic_synonyms=tax_names)
+  final_list <- list(query=taxa2,
+                     current_name=current_names,
+                     basio_name=basio_names,
+                     obligate_synonym=obligate_names,
+                     taxonomic_synonyms=tax_names,
+                     mb_link = mb_links,
+                     publication_results = publication_results)
 
 
 
-  info <- c("query","current_name","basio_name","obligate_synonym")
+  info <- c("query","current_name","basio_name","obligate_synonym","mb_link")
   all_elements <- final_list[info] %>% as_tibble()
   tidy_results <-
     tax_names %>%
     sapply("length<-", max(lengths(.))) %>%
     as_tibble() %>% pivot_longer(everything(),names_to = "query",values_to = "taxonomic_synonyms") %>%
-    full_join(all_elements) %>%
+    full_join(all_elements, by = "query") %>%
     unique.data.frame() %>%
     group_by(query) %>%
     reframe(current_name=unique(current_name),
             basio_name=unique(basio_name),
             obligate_synonym=unique(obligate_synonym),
+            mb_link = unique(mb_link),
             taxonomic_synonyms=unique(taxonomic_synonyms))
 
   final_list[["tidy_results"]] <- tidy_results
